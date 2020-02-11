@@ -1,0 +1,70 @@
+.container {
+  display: grid;
+
+  /* background: blue; */
+  min-height: calc(100vh - 64px);
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 8fr 1fr;
+  grid-template-areas:
+    "searchusers showusers"
+    "footer footer";
+}
+
+.searchUsers {
+  grid-area: searchusers;
+  padding-top: 10%;
+  padding-bottom: 10%;
+}
+
+.searchusersinternal {
+  height: 100%;
+  width: 100%;
+  border-right: 1px solid black !important;
+  padding-left: 5%;
+  padding-right: 5%;
+  /* background: blue; */
+}
+
+.showUsers {
+  grid-area: showusers;
+  padding-top: 10%;
+  padding-bottom: 10%;
+}
+
+.showusersinternal {
+  height: 100%;
+  width: 100%;
+  padding-left: 5%;
+  padding-right: 5%;
+  /* border: 1px solid black !important; */
+}
+
+.footerComponentClass {
+  grid-area: footer;
+}
+
+@media only screen and (max-width: 600px) {
+  .container {
+    /* grid-template-columns: 1fr;
+    grid-template-rows: 2fr 1fr 1fr 1fr 1fr;
+    grid-template-areas:
+      "header"
+      "mainleft"
+      "logindiv"
+      "mainright"
+      "footer"; */
+    grid-template-columns: 1fr;
+    grid-template-rows: 4fr 4fr 1fr;
+    grid-template-areas:
+      "searchusers"
+      "showusers"
+      "footer";
+    height: calc(100vh - 56px);
+  }
+  /* .searchUsers {
+    padding-bottom: 0;
+  }
+  .showUsers {
+    padding-top: 0;
+  } */
+}

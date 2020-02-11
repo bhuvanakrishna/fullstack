@@ -16,6 +16,8 @@ import Registration from "../layout/Registration";
 
 import AuthContext from "../../context/auth/authContext";
 
+import Footer from "../layout/Footer";
+
 const useStyles = makeStyles(theme => ({
   margin20: {
     margin: "20px"
@@ -193,10 +195,11 @@ const Home = props => {
         </div>
       </div>
 
-      <div id="footer">
+      <Footer></Footer>
+      {/* <div id="footer">
         <p>Created by Bhuvana Krishna</p>
         <p>Email: bhuvanakrishna95@gmail.com</p>
-      </div>
+      </div> */}
     </div>
   );
 };
