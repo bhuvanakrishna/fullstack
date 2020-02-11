@@ -14,52 +14,73 @@ import {
 
 export default (state, action) => {
   switch (action.type) {
+    case USER_LOADED:
+      return {
+        ...state,
+        isAuthenticated: true,
+        user: action.payload
+      };
+
     case REGISTER_SUCCESS:
-      localStorage.setItem("token", action.payload.token);
+      // localStorage.setItem("token", action.payload.token);
       return {
         ...state,
         ...action.payload,
-        isAuthenticated: true,
-        loading: false,
+        isAuthenticated: false,
+        // loading: false,
         registrationCompleteDialog: true
       };
+    case LOGIN_SUCCESS:
+      localStorage.setItem("token", action.payload.token);
+      return {
+        ...state,
+        ...action.payload
+        // isAuthenticated: true
+        // loading: false,
+        // registrationCompleteDialog: true
+      };
     case REGISTER_FAIL:
+    case AUTH_ERROR:
+    case LOGIN_FAIL:
       localStorage.removeItem("token");
       return {
         ...state,
         token: null,
-        isAuthenticated: false,
-        loading: false,
+        // isAuthenticated: false,
+        // loading: false,
         user: null,
         error: action.payload
       };
     case CLEAR_ERRORS:
       return {
         ...state,
-        error: null,
-        loading: false
+        // isAuthenticated: false,
+        error: null
+        // loading: false
       };
     case REGISTRATION_DIALOG_OPEN:
       return {
         ...state,
+        // isAuthenticated: false,
         registrationCompleteDialog: true
       };
     case REGISTRATION_DIALOG_CLOSE:
       return {
         ...state,
+        // isAuthenticated: false,
         registrationCompleteDialog: false
       };
-    case TOGGLE_LOADING:
-      let toggle = "";
-      if (state.loading === true) {
-        toggle = false;
-      } else {
-        toggle = true;
-      }
-      return {
-        ...state,
-        loading: toggle
-      };
+    // case TOGGLE_LOADING:
+    //   let toggle = "";
+    //   if (state.loading === true) {
+    //     toggle = false;
+    //   } else {
+    //     toggle = true;
+    //   }
+    //   return {
+    //     ...state,
+    //     loading: toggle
+    //   };
     default:
       return state;
   }

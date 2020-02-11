@@ -56,27 +56,51 @@ const useStyles = makeStyles(theme => ({
   //   }
 }));
 
-const Home = () => {
+const Home = props => {
   const authContext = useContext(AuthContext);
 
-  const { registerAction } = authContext;
+  const { login, error, clearErrors, isAuthenticated } = authContext;
 
-  const classes = useStyles();
-
-  const [login, setLogin] = useState({
+  const [loginform, setLogin] = useState({
     loginemail: "",
-
+    loginErrorMsg: "",
     loginpassword: ""
   });
 
-  const { loginemail, loginpassword } = login;
+  useEffect(() => {
+    if (isAuthenticated === true) {
+      props.history.push("/searchusers");
+    }
+
+    if (error == "Invalid Credentials") {
+      setLogin({ ...loginform, loginErrorMsg: "Invalid Credentials" });
+      clearErrors();
+    }
+    //eslint-disable-next-line
+  }, [error, isAuthenticated, props.history]);
+
+  const classes = useStyles();
+
+  const { loginemail, loginpassword } = loginform;
 
   const onLoginChange = e => {
-    setLogin({ ...login, [e.target.name]: [e.target.value] });
+    setLogin({ ...loginform, [e.target.name]: [e.target.value] });
   };
 
   const loginSubmit = e => {
     e.preventDefault();
+
+    if (loginform.loginemail == "" || loginform.loginpassword == "") {
+      setLogin({
+        ...loginform,
+        loginErrorMsg: "Please enter your credentials."
+      });
+    } else {
+      login({
+        email: loginform.loginemail,
+        password: loginform.loginpassword
+      });
+    }
     console.log("login submit");
   };
 
@@ -118,6 +142,7 @@ const Home = () => {
               value={loginemail}
               onChange={onLoginChange}
               name="loginemail"
+              required
             />
             <TextField
               color="white"
@@ -136,6 +161,7 @@ const Home = () => {
               value={loginpassword}
               onChange={onLoginChange}
               name="loginpassword"
+              required
             />
             <Button
               variant="outlined"
@@ -149,6 +175,7 @@ const Home = () => {
 
         <div id="loginError">
           {/* <p>Invalid credentials. Please try again.</p> */}
+          <p>{loginform.loginErrorMsg}</p>
         </div>
 
         <hr />

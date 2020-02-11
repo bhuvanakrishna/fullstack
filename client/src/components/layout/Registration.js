@@ -64,8 +64,8 @@ class Registration extends React.Component {
       registerPasswordLengthError: false,
       registerPasswordNotSameError: false,
       registerEmailErrorMsg: "",
-      registerNameErrorMsg: "",
-      registerPasswordLengthErrorMsg: "",
+      registerNameErrorMsg: "To be displayed to others",
+      registerPasswordLengthErrorMsg: "Minimum 5 characters",
       registerPasswordNotSameErrorMsg: "",
       registerLoading: false
     };
@@ -140,8 +140,8 @@ class Registration extends React.Component {
       registerPasswordLengthError: false,
       registerPasswordNotSameError: false,
       registerEmailErrorMsg: "",
-      registerNameErrorMsg: "",
-      registerPasswordLengthErrorMsg: "",
+      registerNameErrorMsg: "To be displayed to others",
+      registerPasswordLengthErrorMsg: "Minimum 5 characters",
       registerPasswordNotSameErrorMsg: ""
       // registerLoading: true
     });
@@ -210,6 +210,7 @@ class Registration extends React.Component {
     this.setState({
       registerLoading: false
     });
+    window.location.reload();
   }
 
   render() {
@@ -244,7 +245,7 @@ class Registration extends React.Component {
             id="standard-basic"
             label="Username"
             className={classes.margin20}
-            helperText="To be displayed to others"
+            // helperText="To be displayed to others"
             InputProps={{
               className: classes.underlineblack
             }}

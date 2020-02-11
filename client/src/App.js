@@ -13,6 +13,12 @@ import AuthState from "./context/auth/authState";
 import { createMuiTheme } from "@material-ui/core/styles";
 import { ThemeProvider } from "@material-ui/styles";
 
+import setAuthToken from "../src/utils/setAuthToken";
+
+// if (localStorage.token) {
+//   setAuthToken(localStorage.token);
+// }
+
 const theme = createMuiTheme({
   typography: {
     fontFamily: ["Oswald", "sans-serif"].join(",")

@@ -6,11 +6,23 @@ const bcrypt = require("bcryptjs");
 const config = require("config");
 const jwt = require("jsonwebtoken");
 
+//any time if we want to protect a route, we need middleware
+const auth = require("../middleware/auth");
+
 //@route    GET /auth
 //@desc     Get logged in user
 //@access   Private
-router.get("/", (req, res) => {
-  res.send("get token route");
+router.get("/", auth, async (req, res) => {
+  //here auth parameter ensures that this route is protected
+
+  try {
+    const user = await await User.findById(req.user.id).select("-password");
+    res.json(user);
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send("Server Error");
+  }
+  // res.send("get token route");
 });
 
 //@route    POST /auth
@@ -29,7 +41,10 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { email, password } = req.body;
+    let { email, password } = req.body;
+
+    email = email.toString();
+    password = password.toString();
 
     try {
       let user = await User.findOne({ email });

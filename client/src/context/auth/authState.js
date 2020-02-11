@@ -6,6 +6,8 @@ import authReducer from "./authReducer";
 
 import axios from "axios";
 
+import setAuthToken from "../../utils/setAuthToken";
+
 import {
   REGISTER_SUCCESS,
   REGISTER_FAIL,
@@ -32,9 +34,26 @@ const AuthState = props => {
 
   const [state, dispatch] = useReducer(authReducer, initialState);
 
-  //actions
+  //ACTIONS
 
   //load user - check which user is logged in
+  const loadUser = async () => {
+    //we need this action because jwt is stateless. so, we need to check everytime whether the user is logged in by hitting the route auth.js
+    //also here we are putting token in global headers
+    //we also do this in our app.js so we get to know if the user is authenticated or not
+    if (localStorage.token) {
+      setAuthToken(localStorage.token);
+    }
+    try {
+      const res = await axios.get("/auth");
+      dispatch({
+        type: USER_LOADED,
+        payload: res.data
+      });
+    } catch (error) {
+      dispatch({ type: AUTH_ERROR });
+    }
+  };
 
   //register user
   const registerAction = async formData => {
@@ -43,19 +62,17 @@ const AuthState = props => {
         "Content-Type": "Application/JSON"
       }
     };
-
-    console.log("inside auth state");
-
+    // console.log("inside auth state");
     try {
       const res = await axios.post("/register", formData, config);
-
       dispatch({
         type: REGISTER_SUCCESS,
         //res.data contains the token given by the api
         payload: res.data
       });
+      // console.log("user registered..");
 
-      console.log("user registered..");
+      // loadUser();
     } catch (error) {
       //called when the api responds with error
       dispatch({
@@ -67,6 +84,31 @@ const AuthState = props => {
   };
 
   //login user
+  const login = async formData => {
+    const config = {
+      headers: {
+        "Content-Type": "Application/JSON"
+      }
+    };
+
+    try {
+      const res = await axios.post("/auth", formData, config);
+      dispatch({
+        type: LOGIN_SUCCESS,
+        //res.data contains the token given by the api
+        payload: res.data
+      });
+
+      loadUser();
+    } catch (error) {
+      //called when the api responds with error
+      dispatch({
+        type: LOGIN_FAIL,
+        //since we are passing a json which has an error 'msg'. There are two error msgs in auth route for register. one is for email taken and other is for name taken
+        payload: error.response.data.msg
+      });
+    }
+  };
 
   //logout
 
@@ -104,7 +146,9 @@ const AuthState = props => {
         registrationCompleteDialog: state.registrationCompleteDialog,
         openDialog,
         closeDialog,
-        toggleLoading
+        toggleLoading,
+        loadUser,
+        login
       }}
     >
       {props.children}
