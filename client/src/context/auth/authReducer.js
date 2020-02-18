@@ -15,9 +15,11 @@ import {
 export default (state, action) => {
   switch (action.type) {
     case USER_LOADED:
+      console.log("inside reducer");
       return {
         ...state,
         isAuthenticated: true,
+        loading: false,
         user: action.payload
       };
 
@@ -27,16 +29,16 @@ export default (state, action) => {
         ...state,
         ...action.payload,
         isAuthenticated: false,
-        // loading: false,
+        loading: false,
         registrationCompleteDialog: true
       };
     case LOGIN_SUCCESS:
       localStorage.setItem("token", action.payload.token);
       return {
         ...state,
-        ...action.payload
-        // isAuthenticated: true
-        // loading: false,
+        ...action.payload,
+        isAuthenticated: true,
+        loading: false
         // registrationCompleteDialog: true
       };
     case REGISTER_FAIL:
@@ -47,7 +49,7 @@ export default (state, action) => {
         ...state,
         token: null,
         // isAuthenticated: false,
-        // loading: false,
+        loading: false,
         user: null,
         error: action.payload
       };
@@ -55,8 +57,8 @@ export default (state, action) => {
       return {
         ...state,
         // isAuthenticated: false,
-        error: null
-        // loading: false
+        error: null,
+        loading: false
       };
     case REGISTRATION_DIALOG_OPEN:
       return {

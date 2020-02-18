@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Navbar from "../layout/Navbar";
 import styles from "./Searchusers.module.css";
 import Footer from "../layout/Footer";
@@ -6,6 +6,9 @@ import TextField from "@material-ui/core/TextField";
 import { makeStyles } from "@material-ui/core/styles";
 import OnlineUsersList from "../layout/OnlineUsersList";
 import IndividualUser from "../layout/IndividualUser";
+import AuthContext from "../../context/auth/authContext";
+import Socket from "../sockets/Socket";
+import socketIOClient from "socket.io-client";
 
 const useStyles = makeStyles({
   cssLabel: {
@@ -30,59 +33,40 @@ const useStyles = makeStyles({
     borderWidth: "1px",
     borderColor: "black !important"
   }
-
-  // cssOutlinedInput: {
-  //   // "&:not(hover):not($disabled):not($cssFocused):not($error) $notchedOutline": {
-  //   //   borderColor: "black" //default
-  //   // },
-  //   "&:not(hover):not($disabled):not($cssFocused):not($error) $notchedOutline": {
-  //     borderColor: "black" //default
-  //   },
-  //   "&:hover:not($disabled):not($cssFocused):not($error) $notchedOutline": {
-  //     borderColor: "#fcba04" //hovered
-  //   },
-  //   "&$cssFocused $notchedOutline": {
-  //     borderColor: "#fcba04 !important" //focused
-  //   },
-  //   "&$cssFocused $notchedOutline": {
-  //     borderColor: `green !important`
-  //   }
-  // },
-
-  // cssFocused: {
-  //   "&:not(hover):not($disabled):not($cssFocused):not($error) $notchedOutline": {
-  //     borderColor: "#fcba04 !important" //default
-  //   },
-  //   "&:hover:not($disabled):not($cssFocused):not($error) $notchedOutline": {
-  //     borderColor: "#fcba04 !important" //hovered
-  //   },
-  //   "&$cssFocused $notchedOutline": {
-  //     borderColor: "green !important" //focused
-  //   }
-  // },
-  // notchedOutline: {
-  //   "&:not(hover):not($disabled):not($cssFocused):not($error) $notchedOutline": {
-  //     borderColor: "black" //default
-  //   },
-  //   "&:hover:not($disabled):not($cssFocused):not($error) $notchedOutline": {
-  //     borderColor: "#fcba04 !important" //hovered
-  //   },
-  //   "&$cssFocused $notchedOutline": {
-  //     borderColor: "#fcba04 !important" //focused
-  //   }
-  // "&:after": {
-  //   borderColor: ["white, !important"]
-  // }
-  // }
-  // borderWidth: "1px",
-  // borderColor: "#fcba04 !important"
 });
 
 const Searchusers = props => {
+  const authContext = useContext(AuthContext);
+
+  let { user, isAuthenticated, loading } = authContext;
+
+  const [socketState, setSocketState] = useState({
+    socket: null
+  });
+
+  useEffect(() => {
+    let loadUserFunction = async () => {
+      await authContext.loadUser();
+    };
+    loadUserFunction();
+  }, []);
+
+  useEffect(() => {
+    if (user !== null) {
+      const socket = socketIOClient("http://localhost:5000");
+      socket.once("connect", () => {
+        console.log("Connected!!");
+      });
+
+      setSocketState((socketState.socket = socket));
+    }
+  }, [user]);
+
   const classes = useStyles();
 
   return (
     <div>
+      {/* <Socket></Socket> */}
       <Navbar></Navbar>
       <div className={styles.container}>
         <div className={styles.searchUsers}>

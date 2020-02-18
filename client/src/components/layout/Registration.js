@@ -223,7 +223,7 @@ class Registration extends React.Component {
       <React.Fragment>
         <form onSubmit={this.handleRegisterSubmit}>
           <TextField
-            id="standard-basic"
+            // id="standard-basic"
             label="Email"
             className={classes.margin20}
             InputProps={{
@@ -242,7 +242,7 @@ class Registration extends React.Component {
           />
           <br />
           <TextField
-            id="standard-basic"
+            // id="standard-basic"
             label="Username"
             className={classes.margin20}
             // helperText="To be displayed to others"
@@ -264,7 +264,7 @@ class Registration extends React.Component {
           />
           <br />
           <TextField
-            id="standard-basic"
+            // id="standard-basic"
             label="Password"
             className={classes.margin20}
             helperText="Minimum 5 characters"

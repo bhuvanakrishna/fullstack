@@ -4,10 +4,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
-import List from "@material-ui/core/List";
-import Paper from "@material-ui/core/Paper";
-import Avatar from "@material-ui/core/Avatar";
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 
 import { FixedSizeList } from "react-window";
 
@@ -72,45 +68,23 @@ renderRow.propTypes = {
 export default function VirtualizedList(props) {
   const classes = useStyles();
 
-  // console.log("props of virtualized list: ");
-  // console.log(props.list);
+  console.log("props of virtualized list: ");
+  console.log(props.list);
 
   if (props.list) {
-    // console.log("inside onlineuserslist:");
-    // console.log(props.list);
-    if (props.list.length == 0) {
-      return (
-        <p>
-          <span>&nbsp;&nbsp;&nbsp;</span>No match found!
-        </p>
-      );
-    } else {
-      return (
-        <div className={classes.root}>
-          <Paper style={{ maxHeight: "100%", overflow: "auto" }}>
-            <List>
-              {props.list.map((item, i) => {
-                return (
-                  <ListItem button key={i}>
-                    <ListItemAvatar>
-                      <Avatar
-                        alt="PP"
-                        src="https://api.adorable.io/avatars/285/abott@adorable.png"
-                      />
-                    </ListItemAvatar>
-                    {/* <ListItemIcon>{img}</ListItemIcon> */}
-                    <span>&nbsp;&nbsp;</span>
-                    <ListItemText primary={item.name} />
-                  </ListItem>
-                );
-              })}
-            </List>
-          </Paper>
-          {/* {renderRow} */}
+    return (
+      <div className={classes.root}>
+        <FixedSizeList
+          height={400}
+          width={"100%"}
+          itemSize={60}
+          itemCount={props.list.length}
+        >
+          {renderRow}
           {/* {myRenderRow} */}
-        </div>
-      );
-    }
+        </FixedSizeList>
+      </div>
+    );
   } else {
     return (
       <div>

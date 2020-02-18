@@ -90,7 +90,7 @@ function IndividualUser() {
             className: classes.blacklabel
           }}
         />
-        <Button variant="contained" style={sendreqbutton}>
+        <Button variant="contained" style={sendreqbutton} type="submit">
           Send
         </Button>
       </form>

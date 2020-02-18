@@ -1,22 +1,84 @@
-const express = require("express");
+var express = require("express");
+var app = express();
+var server = require("http").createServer(app);
+var io = (module.exports.io = require("socket.io")(server));
+var config = require("config");
+var SocketManager = require("./SocketManager");
 
-//socket io needs raw http server. actually we dont need this with express. Express though does all this behind automatically. we are doing explicitly.
-const http = require("http");
-const socketio = require("socket.io");
+let onlineUsersArray = [];
 
-const app = express();
+//Setting up a socket with the namespace "connection" for new sockets
+// io.on("connection", socket => {
+//   console.log("New client connected: ");
+//   // console.log(socket.id);
+//   // console.log(Object.keys(io.engine.clients));
 
-//creating http server for socketio
-const server = http.createServer(app);
-const io = socketio(server);
+//   socket.on("onlineuser", userObject => {
+//     // console.log(userObject);
+//     if (userObject) {
+//       onlineUsersArray.push(userObject.name);
+//     }
 
-//attaching io object to app so that we can access the io object in routes
-//link -- https://stackoverflow.com/questions/37559610/socket-io-emit-on-express-route
-app.io = io;
+//     console.log(onlineUsersArray);
+//   });
+
+//   socket.emit("listofonlineuser", onlineUsersArray);
+
+//   socket.on("disconnect", () => {
+//     console.log("Client disconnected");
+//     console.log(socket.id);
+//   });
+// });
+
+io.on("connection", SocketManager);
 
 const connectDB = require("./config/db");
 
 const PORT = process.env.PORT || 5000;
+
+// app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
+
+// console.log(config.jwtSecret);
+
+//with Authentication
+// io.sockets
+//   .on(
+//     "connection",
+
+//     socketioJwt.authorize({
+//       secret: config.jwtSecret,
+//       timeout: 15000 // 15 seconds to send the authentication message
+//     })
+//   )
+//   .on("authenticated", socket => {
+//     //this socket is authenticated, we are good to handle more events from it.
+
+//     console.log("active sockets: " + socket.activeSockets);
+
+//     usersIdArray.push(socket.decoded_token.user.id);
+
+//     socket.on("disconnect", () => {
+//       usersIdArray = usersIdArray.filter(user => {
+//         return user != socket.decoded_token.user.id;
+//       });
+//       console.log("user disconnected");
+//     });
+
+//     console.log(usersIdArray);
+//   });
+
+// io.on("connection", socket => {
+//   console.log("socket connected. Id: " + socket.id);
+
+//   socket.on("user", user => {
+//     if (user) {
+//       console.log("user recieved: " + user.name);
+//       usersObjectArray.push(user);
+//     }
+//   });
+
+//   socket.emit("all connected users", usersObjectArray);
+// });
 
 //connect to db
 connectDB();
@@ -26,6 +88,7 @@ app.use(express.json({ extended: false }));
 
 app.get("/", (req, res) => {
   res.json({ msg: "welcome to server" });
+  // console.log(req);
 });
 
 //define routes
@@ -34,7 +97,7 @@ app.use("/auth", require("./routes/auth"));
 app.use("/onlineusers", require("./routes/onlineusers"));
 app.use("/register", require("./routes/register"));
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log("Server started on port: " + PORT);
 
   // console.log("server variable: " + server);

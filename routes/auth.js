@@ -16,7 +16,7 @@ router.get("/", auth, async (req, res) => {
   //here auth parameter ensures that this route is protected
 
   try {
-    const user = await await User.findById(req.user.id).select("-password");
+    const user = await User.findById(req.user.id).select("-password");
     res.json(user);
   } catch (error) {
     console.log(error.message);

@@ -71,7 +71,8 @@ const Home = props => {
 
   useEffect(() => {
     if (isAuthenticated === true) {
-      props.history.push("/searchusers");
+      // props.history.push("/searchusers");
+      props.history.push("/searchuserscc");
     }
 
     if (error == "Invalid Credentials") {
@@ -130,7 +131,7 @@ const Home = props => {
         <div id="loginformdiv">
           <form onSubmit={loginSubmit}>
             <TextField
-              id="filled-basic"
+              // id="filled-basic"
               label="Email"
               variant="filled"
               className={classes.margin20}
@@ -147,7 +148,7 @@ const Home = props => {
               required
             />
             <TextField
-              color="white"
+              // color="white"
               id="filled-basic"
               label="Password"
               variant="filled"
