@@ -10,6 +10,7 @@ import AuthContext from "../../context/auth/authContext";
 import Socket from "../sockets/Socket";
 import socketIOClient from "socket.io-client";
 import { withStyles } from "@material-ui/core/styles";
+import NavbarContext from "../../context/navbar/navbarContext";
 
 const styles2 = theme => ({
   cssLabel: {

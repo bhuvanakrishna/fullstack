@@ -71,8 +71,8 @@ const Home = props => {
 
   useEffect(() => {
     if (isAuthenticated === true) {
-      // props.history.push("/searchusers");
-      props.history.push("/searchuserscc");
+      props.history.push("/searchusers");
+      // props.history.push("/searchuserscc");
     }
 
     if (error == "Invalid Credentials") {

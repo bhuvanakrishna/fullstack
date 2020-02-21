@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
 import ListItem from "@material-ui/core/ListItem";
@@ -75,6 +75,21 @@ export default function VirtualizedList(props) {
   // console.log("props of virtualized list: ");
   // console.log(props.list);
 
+  // const [selectedUser, changeSelectedUser] = useState("");
+
+  // const individualUser = user => {
+  //   // console.log("inside individual user");
+  //   // console.log("clicked on " + user.name);
+  //   changeSelectedUser(user);
+  // };
+
+  // useEffect(() => {
+  //   if (selectedUser) {
+  //     console.log("state:");
+  //     console.log(selectedUser);
+  //   }
+  // }, [selectedUser]);
+
   if (props.list) {
     // console.log("inside onlineuserslist:");
     // console.log(props.list);
@@ -91,7 +106,17 @@ export default function VirtualizedList(props) {
             <List>
               {props.list.map((item, i) => {
                 return (
-                  <ListItem button key={i}>
+                  <ListItem
+                    button
+                    key={i}
+                    // onClick={() => {
+                    //   individualUser(item);
+                    // }}
+                    // updatedUser={selectedUser}
+                    onClick={() => {
+                      props.changeSelectedUser(item);
+                    }}
+                  >
                     <ListItemAvatar>
                       <Avatar
                         alt="PP"

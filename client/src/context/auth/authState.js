@@ -45,7 +45,7 @@ const AuthState = props => {
       setAuthToken(localStorage.token);
     }
 
-    console.log("inside load user");
+    // console.log("inside load user");
     try {
       const res = await axios.get("/auth");
       dispatch({

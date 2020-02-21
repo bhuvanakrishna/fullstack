@@ -14,3 +14,8 @@ export const TOGGLE_LOADING = "TOGGLE_LOADING";
 
 export const SET_ALERT = "SET_ALERT";
 export const REMOVE_ALERT = "REMOVE_ALERT";
+
+export const REQUESTS_PAGE = "REQUESTS_PAGE";
+export const SEARCH_USERS_PAGE = "SEARCH_USERS_PAGE";
+export const PROFILE_PAGE = "PROFILE_PAGE";
+export const DISCUSSION_PAGE = "DISCUSSION_PAGE";

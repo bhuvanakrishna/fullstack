@@ -68,3 +68,121 @@
     padding-top: 0;
   } */
 }
+
+/* from here css for requests page  */
+
+.requestsContainer {
+  display: grid;
+  min-height: calc(100vh - 64px);
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 8fr 1fr;
+  grid-template-areas:
+    "allRequests individualRequest"
+    "footer footer";
+}
+
+.allRequests {
+  grid-area: allRequests;
+  padding-top: 10%;
+  padding-bottom: 10%;
+}
+
+.allRequestsInternal {
+  height: 100%;
+  /* height: 400; */
+  /* max-height: 100%; */
+  width: 100%;
+  border-right: 1px solid black !important;
+  padding-left: 5%;
+  padding-right: 5%;
+  /* overflow: auto; */
+  /* overflow-y: scroll; */
+  /* background: blue; */
+}
+
+.allRequestsInternalInternal {
+  width: 100%;
+  /* padding-top: 20px; */
+  max-height: 550px;
+  overflow-y: scroll;
+}
+
+.individualRequest {
+  grid-area: individualRequest;
+  padding-top: 10%;
+  padding-bottom: 10%;
+}
+
+.individualRequestInternal {
+  height: 100%;
+  width: 100%;
+  padding-left: 5%;
+  padding-right: 5%;
+  /* display: flex;
+  justify-content: center; */
+  /* border: 1px solid black !important; */
+}
+
+.requestImageDiv {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.loadingContainer {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.requestsLoadingContainer {
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.paintCanvas {
+  width: 500px;
+  height: 500px;
+  /* background: blue; */
+}
+
+.canvasClass {
+  width: 500px;
+  height: 500px;
+  border: 1px solid black;
+  cursor: url(../assets/blackpen.svg), pointer;
+}
+.canvasClassRed {
+  width: 500px;
+  height: 500px;
+  border: 1px solid black;
+  cursor: url(../assets/redpen.svg), pointer;
+}
+
+.canvasClassGreen {
+  width: 500px;
+  height: 500px;
+  border: 1px solid black;
+  cursor: url(../assets/greenpen.svg), pointer;
+}
+
+.canvasClassBlue {
+  width: 500px;
+  height: 500px;
+  border: 1px solid black;
+  cursor: url(../assets/bluepen.svg), pointer;
+}
+
+.canvasClassEraser {
+  width: 500px;
+  height: 500px;
+  border: 1px solid black;
+  cursor: url(../assets/eraser.svg), pointer;
+}

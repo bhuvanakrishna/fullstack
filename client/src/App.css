@@ -183,3 +183,7 @@ hr {
       "footer";
   }
 }
+
+.footerComponentClass {
+  grid-area: footer;
+}

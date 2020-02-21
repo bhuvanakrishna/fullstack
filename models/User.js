@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+mongoose.set("useFindAndModify", false);
 
 const UserSchema = mongoose.Schema({
   name: {
@@ -14,6 +15,16 @@ const UserSchema = mongoose.Schema({
   password: {
     type: String,
     required: true
+  },
+  bio: {
+    type: String,
+    default: "My Bio"
+  },
+  receivedRequests: {
+    type: Array
+  },
+  avatar: {
+    type: Buffer
   }
 });
 

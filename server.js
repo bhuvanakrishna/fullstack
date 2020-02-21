@@ -96,6 +96,8 @@ app.use("/auth", require("./routes/auth"));
 // app.use("/discuss", require("./routes/discuss"));
 app.use("/onlineusers", require("./routes/onlineusers"));
 app.use("/register", require("./routes/register"));
+app.use("/requests", require("./routes/requests"));
+app.use("/userinfo", require("./routes/userinfo"));
 
 server.listen(PORT, () => {
   console.log("Server started on port: " + PORT);
