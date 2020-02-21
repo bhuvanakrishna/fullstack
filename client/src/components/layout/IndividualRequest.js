@@ -9,6 +9,7 @@ import styles from "../pages/Searchusers.module.css";
 import HashLoader from "react-spinners/ScaleLoader";
 import axios from "axios";
 import { BrowserRouter as Router, Link, Route } from "react-router-dom";
+// import AuthContext from "../../context/auth/authContext";
 
 // import Button from "@material-ui/core/Button";
 
@@ -94,6 +95,7 @@ let userDataFromDB;
 function IndividualRequest(props) {
   //using context to change view to discussion page upon user accepting discussion
   const navbarContext = useContext(NavbarContext);
+  const authContext = useContext(AuthContext);
 
   console.log("from individual request component:");
   console.log(props.selectedRequest);
@@ -101,7 +103,39 @@ function IndividualRequest(props) {
   const [loading, changeLoading] = useState(true);
 
   const changeToDiscussionPage = () => {
-    navbarContext.toDiscussionPage();
+    let flag = false;
+    //check if the user is online
+    props.onlineUsersList.forEach(userObject => {
+      if (userObject.name == props.selectedRequest.from) {
+        flag = true;
+      }
+    });
+    console.log("online users array:");
+    console.log(props.onlineUsersList);
+    console.log("selected request");
+    console.log(props.selectedRequest);
+    if (flag) {
+      // props.socket.emit("toDiscussionPageRequest", {requestFrom: authContext.user.name});
+      //ask the status if the other user is on discussion page
+      props.socket.emit("reqIsAvailableForDiscussion", {
+        from: authContext.user.name,
+        to: props.selectedRequest.from
+      });
+
+      console.log("emitted req. if the other user is online");
+      props.socket.on("availabilityStatus", data => {
+        console.log("got status if the other user is online or not");
+        if (!data.status) {
+          navbarContext.toDiscussionPage();
+          props.socket.emit("reqChangeToDiscussionPage", {
+            from: data.to,
+            to: data.from
+          });
+        }
+      });
+    } else {
+      alert("User not online at the moment. Please try later");
+    }
   };
 
   useEffect(() => {

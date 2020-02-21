@@ -20,6 +20,26 @@ module.exports = function(socket) {
         .emit("requestFrom", { from: data.from, msg: data.msg });
     });
 
+    socket.on("reqIsAvailableForDiscussion", data => {
+      io.sockets
+        .in(data.to)
+        .emit("isAvailableForDiscussion", { from: data.from, to: data.to });
+    });
+
+    socket.on("resAvailability", data => {
+      io.sockets.in(data.to).emit("availabilityStatus", {
+        status: data.isAvailalble,
+        from: data.from,
+        to: data.to
+      });
+    });
+
+    socket.on("reqChangeToDiscussionPage", data => {
+      io.sockets
+        .in(data.to)
+        .emit("changeToDiscussionPage", { otherUser: data.from });
+    });
+
     socket.on("disconnect", function() {
       console.log("Disconnected socket: " + socket.id);
       onlineUsers = onlineUsers.filter(user => {

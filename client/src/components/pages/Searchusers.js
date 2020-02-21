@@ -71,6 +71,47 @@ const Searchusers = props => {
 
   const [loading, changeLoading] = useState(true);
 
+  const [onDiscussionPage, changeOnDiscussionPageState] = useState(false);
+
+  const [connectedTo, changeConnectedToState] = useState("");
+
+  // useEffect(() => {
+  //   if (navbarContext.discussionPage) {
+  //     changeOnDiscussionPageState(true);
+
+  //     // if (navbarContext.discussionPage) {
+
+  //     // }
+  //   } else {
+  //     changeOnDiscussionPageState(false);
+  //   }
+  // }, [navbarContext]);
+
+  useEffect(() => {
+    if (navbarContext.discussionPage) {
+      let present = false;
+      socket.on("listofonline", list => {
+        list.forEach(user => {
+          if (user.name == connectedTo) {
+            present = true;
+          }
+        });
+
+        if (!present) {
+          navbarContext.toSearchUsersPage();
+
+          console.log("discusion page context");
+          console.log(navbarContext.discussionPage);
+
+          alert("User left!! Please wait you will be redirected");
+        }
+      });
+    }
+  }, [navbarContext.discussionPage]);
+
+  // console.log("on discussion page state");
+  // console.log(onDiscussionPage);
+
   let changeRequestsToZero = () => {
     changeRequestsState(requestsState => 0);
   };
@@ -140,6 +181,12 @@ const Searchusers = props => {
         socket.on("listofonline", list => {
           // console.log("list of online users: ");
 
+          list = list.filter(user => {
+            return user.name != authContext.user.name;
+          });
+          console.log("online users list");
+          console.log(list);
+
           searchState({
             ...search,
             onlineUsers: list
@@ -148,10 +195,34 @@ const Searchusers = props => {
           // console.log(this.state.onlineUsers);
         });
       });
+
+      socket.on("isAvailableForDiscussion", data => {
+        console.log(
+          "received is available online. that means the other user clicked accept"
+        );
+
+        socket.emit("resAvailability", {
+          // isAvailable: onDiscussionPage,
+          isAvailable: navbarContext.discussionPage,
+          to: data.from,
+          from: data.to
+        });
+      });
+
+      socket.on("changeToDiscussionPage", data => {
+        console.log("received order to change page to discussion");
+        changeConnectedToState(data.otherUser);
+        navbarContext.toDiscussionPage();
+      });
+
       // changeLoading(false);
       // setSocketState((socketState.socket = socket));
     }
   }, [loadUserFlag]);
+
+  if (socket) {
+    // socket.on("");
+  }
 
   useEffect(() => {
     const getRequests = () => {
@@ -339,6 +410,8 @@ const Searchusers = props => {
               <div className={styles.individualRequestInternal}>
                 <IndividualRequest
                   selectedRequest={selectedRequest}
+                  onlineUsersList={search.onlineUsers}
+                  socket={socket}
                 ></IndividualRequest>
               </div>
             </div>
