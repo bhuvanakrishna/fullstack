@@ -186,3 +186,192 @@
   border: 1px solid black;
   cursor: url(../assets/eraser.svg), pointer;
 }
+
+.discussionPageContainer {
+  display: grid;
+  /* max-height: calc(100vh - 64px); */
+  height: 100vh;
+  grid-template-columns: 2fr 1fr;
+  grid-template-rows: 1fr 8fr 1fr;
+  grid-template-areas:
+    "header header"
+    "videoChat paintComponent"
+    "footer footer";
+}
+
+.videoChat {
+  grid-area: videoChat;
+  max-height: 80vh;
+  width: 100%;
+  /* background: blue; */
+  /* display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 5fr 1fr;
+  grid-template-areas:
+    "remoteVideo"
+    "localVideoDiv"; */
+
+  /* border: 1px solid blue; */
+}
+
+.videosContainer {
+  max-width: 100%;
+  max-height: 80vh;
+  height: 100%;
+  /* background: black; */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.remoteVideo {
+  /* grid-area: remoteVideo; */
+  max-height: 400px;
+  /* max-width: 100%; */
+  /* background: green; */
+}
+
+.localVideoDiv {
+  /* grid-area: localVideoDiv; */
+  /* max-height: 100px; */
+  /* max-width: 100%; */
+  /* background: orange; */
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* for disconnect button */
+.buttonContainer {
+  display: flex;
+  align-items: center;
+  padding-left: 50px;
+}
+
+.navbar {
+  /* color: black; */
+  grid-area: header;
+  height: 60px;
+  width: 100%;
+  background: #fcba04;
+
+  -moz-box-shadow: 0px 0.5px 5px 6px #ccc;
+  -webkit-box-shadow: 0px 0.5px 5px 6px #ccc;
+  box-shadow: 0px 0.5px 5px 6px #ccc;
+}
+
+.navbarName {
+  padding-left: 20px;
+  height: 100%;
+  /* background: black; */
+  /* padding-top: 5px; */
+  display: flex;
+  align-items: center;
+}
+
+.myVideo {
+  max-height: 150px;
+}
+
+.paintComponent {
+  grid-area: paintComponent;
+  height: 100%;
+  min-width: 500px;
+  width: 600px;
+  /* background: purple; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* border: 1px solid purple; */
+}
+
+.insidePaintComponent {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.paintButtons {
+  display: flex;
+  justify-content: center;
+}
+
+.profilePageContainer {
+  display: grid;
+  /* max-height: calc(100vh - 64px); */
+  height: calc(100vh - 64px);
+  grid-template-columns: 1fr;
+  grid-template-rows: 8fr 1fr;
+  grid-template-areas:
+    "profileSettings"
+    "footer";
+}
+
+.profileSettings {
+  grid-area: profileSettings;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.buttonsDiv {
+  /* background: pink; */
+  width: 100%;
+  /* height: 50%; */
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  align-items: center;
+  /* padding: 50px; */
+  /* background: pink; */
+}
+
+.changePhotoButton {
+  margin: 32px;
+  /* height: 50px;
+  margin: 20px; */
+  /* background-color: black; */
+}
+
+.changePasswordButton {
+  margin: 32px;
+  /* height: 50px;
+  margin: 20px; */
+}
+
+.changeBioButton {
+  margin: 32px;
+  /* height: 50px;
+  margin: 20px; */
+}
+
+.showBioContainer {
+  /* height: 40%; */
+  /* background: pink; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  /* background: yellow; */
+}
+
+.bioTextField {
+  margin-top: 0px;
+  margin-left: 32px;
+  margin-right: 32px;
+  margin-bottom: 0;
+  width: 300px;
+  /* background: blue; */
+}
+
+.updateBioButton {
+  /* background: pink; */
+  /* height: 100%; */
+  margin: 12px;
+  display: flex;
+  justify-content: center;
+}

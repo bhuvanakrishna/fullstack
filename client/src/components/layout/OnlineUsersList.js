@@ -34,8 +34,6 @@ const useStyles = makeStyles(theme => ({
 // }
 
 function renderRow(props) {
-  console.log("inside renderrow");
-  console.log(props);
   const { index, style } = props;
   const style2 = {
     // position: "absolute",
@@ -109,10 +107,6 @@ export default function VirtualizedList(props) {
                   <ListItem
                     button
                     key={i}
-                    // onClick={() => {
-                    //   individualUser(item);
-                    // }}
-                    // updatedUser={selectedUser}
                     onClick={() => {
                       props.changeSelectedUser(item);
                     }}

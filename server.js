@@ -7,29 +7,6 @@ var SocketManager = require("./SocketManager");
 
 let onlineUsersArray = [];
 
-//Setting up a socket with the namespace "connection" for new sockets
-// io.on("connection", socket => {
-//   console.log("New client connected: ");
-//   // console.log(socket.id);
-//   // console.log(Object.keys(io.engine.clients));
-
-//   socket.on("onlineuser", userObject => {
-//     // console.log(userObject);
-//     if (userObject) {
-//       onlineUsersArray.push(userObject.name);
-//     }
-
-//     console.log(onlineUsersArray);
-//   });
-
-//   socket.emit("listofonlineuser", onlineUsersArray);
-
-//   socket.on("disconnect", () => {
-//     console.log("Client disconnected");
-//     console.log(socket.id);
-//   });
-// });
-
 io.on("connection", SocketManager);
 
 const connectDB = require("./config/db");
@@ -98,6 +75,10 @@ app.use("/onlineusers", require("./routes/onlineusers"));
 app.use("/register", require("./routes/register"));
 app.use("/requests", require("./routes/requests"));
 app.use("/userinfo", require("./routes/userinfo"));
+app.use("/unreadRequests", require("./routes/unreadRequests"));
+app.use("/uploadprofilepic", require("./routes/uploadprofilepic"));
+app.use("/updatebio", require("./routes/updatebio"));
+app.use("/deleteaccount", require("./routes/deleteaccount"));
 
 server.listen(PORT, () => {
   console.log("Server started on port: " + PORT);

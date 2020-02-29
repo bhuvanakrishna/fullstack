@@ -23,8 +23,8 @@ const UserSchema = mongoose.Schema({
   receivedRequests: {
     type: Array
   },
-  avatar: {
-    type: Buffer
+  unreadRequests: {
+    type: Number
   }
 });
 

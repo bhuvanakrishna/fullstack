@@ -1,17 +1,13 @@
 import React, { useState, useEffect, useContext } from "react";
-import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/core/styles";
 import AuthContext from "../../context/auth/authContext";
 import NavbarContext from "../../context/navbar/navbarContext";
-import RequestImage from "../assets/request.svg";
 import styles from "../pages/Searchusers.module.css";
 import HashLoader from "react-spinners/ScaleLoader";
-import axios from "axios";
-import { BrowserRouter as Router, Link, Route } from "react-router-dom";
-// import AuthContext from "../../context/auth/authContext";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
-// import Button from "@material-ui/core/Button";
+import axios from "axios";
 
 const imgStyle = {
   height: "200px",
@@ -38,10 +34,6 @@ const sendreq = {
   marginBottom: "1%"
 };
 
-const reqmsgpadding = {
-  paddingBottom: "2%"
-};
-
 const acceptButton = {
   // background: "#fcba04",
   background: "green",
@@ -59,18 +51,8 @@ const deleteButton = {
   marginRight: "10px"
 };
 
-const requestImage = {
-  maxHeight: "100%",
-  maxWidth: "100%"
-};
-
-const requestImageContainer = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  flexDirection: "column"
-  // Height: "100%",
-  // Width: "100%"
+const yellowColor = {
+  color: "#fcba04"
 };
 
 const useStyles = makeStyles(theme => ({
@@ -97,88 +79,110 @@ function IndividualRequest(props) {
   const navbarContext = useContext(NavbarContext);
   const authContext = useContext(AuthContext);
 
-  console.log("from individual request component:");
-  console.log(props.selectedRequest);
-
   const [loading, changeLoading] = useState(true);
+
+  const [acceptDiscussionLoading, changeAcceptDiscussionLoading] = useState({
+    state: false
+  });
+
+  const [deletedRequest, changeDeletedRequest] = useState(false);
+
+  let buttonFlag = false;
+
+  const changeButtonVariable = () => {
+    if (buttonFlag) {
+      changeAcceptDiscussionLoading({
+        state: false
+      });
+      buttonFlag = false;
+    } else {
+      changeAcceptDiscussionLoading({
+        state: true
+      });
+      buttonFlag = true;
+    }
+  };
 
   const changeToDiscussionPage = () => {
     let flag = false;
-    //check if the user is online
+
     props.onlineUsersList.forEach(userObject => {
       if (userObject.name == props.selectedRequest.from) {
         flag = true;
       }
     });
-    console.log("online users array:");
-    console.log(props.onlineUsersList);
-    console.log("selected request");
-    console.log(props.selectedRequest);
+
     if (flag) {
-      // props.socket.emit("toDiscussionPageRequest", {requestFrom: authContext.user.name});
-      //ask the status if the other user is on discussion page
       props.socket.emit("reqIsAvailableForDiscussion", {
         from: authContext.user.name,
         to: props.selectedRequest.from
       });
 
-      console.log("emitted req. if the other user is online");
+      changeButtonVariable();
       props.socket.on("availabilityStatus", data => {
-        console.log("got status if the other user is online or not");
-        if (!data.status) {
+        if (data.status) {
+          props.setUser(data.from);
           navbarContext.toDiscussionPage();
           props.socket.emit("reqChangeToDiscussionPage", {
             from: data.to,
             to: data.from
           });
+          props.handleInitiator();
+        } else {
+          changeButtonVariable();
+          alert("User is busy at the moment. Try again later.");
         }
       });
     } else {
+      changeButtonVariable();
       alert("User not online at the moment. Please try later");
+      changeButtonVariable();
+    }
+  };
+
+  const deleteRequest = async () => {
+    props.removeSelectedRequest();
+
+    props.updateList(props.selectedRequest.id);
+    changeDeletedRequest(true);
+    try {
+      await axios.delete("/requests", {
+        data: {
+          id: props.selectedRequest.id,
+          name: authContext.user.name
+        }
+      });
+    } catch (error) {
+      console.log(error);
     }
   };
 
   useEffect(() => {
     if (props.selectedRequest) {
+      changeDeletedRequest(false);
       changeLoading(true);
       axios
         .get("/userinfo", {
           params: { name: props.selectedRequest.from }
         })
         .then(response => {
-          console.log("response from userinfo api");
-
           userDataFromDB = response.data[0];
-          console.log(userDataFromDB);
           changeLoading(false);
         });
     }
   }, [props.selectedRequest]);
 
-  // useEffect(() => {
-  //   if (userDataFromDB) {
-  //     changeLoading(false);
-  //   }
-  // }, [userDataFromDB]);
-
-  //   const authContext = useContext(AuthContext);
-
-  if (props.selectedRequest) {
-    console.log("inside individual request");
-    console.log(props.selectedRequest);
+  if (!props.allRequestsState.length) {
+    return <h4>You have no requests...</h4>;
   }
 
-  const classes = useStyles();
-  // console.log("individual user:");
-  // console.log(props.individualUser);
-  // console.log("list of users");
-  // console.log(props.list);
-
   if (props.selectedRequest) {
+    if (deletedRequest) {
+      return <h4>Click on a request...</h4>;
+    }
     if (loading) {
       return (
         <div className={styles.requestsLoadingContainer}>
-          {/* <div style={requestImageContainer}> */}
           <p>Please wait...</p>
 
           <HashLoader color={"#fcba04"} size={15}></HashLoader>
@@ -194,30 +198,48 @@ function IndividualRequest(props) {
           />
           <div style={namebiocontainer}>
             <p style={name}>{props.selectedRequest.from}</p>
-            {/* <p style={name}>ABC</p> */}
-            <p style={bio}>
-              {/* Lorem ipsum dolor sit amet consectetur adipisicing elit. Porro at
-              fugit consequatur, quam eligendi quasi illum aspernatur ducimus in,
-              saepe dolor et minus dolorum quaerat aut alias quo assumenda eaque. */}
-              {/* {props.individualUser.bio} */}
-              {/* bio of abc */}
-              {userDataFromDB.bio}
-            </p>
+
+            <p style={bio}>{userDataFromDB.bio}</p>
           </div>
           <p style={sendreq}>Request Message:</p>
           <h5>{props.selectedRequest.reqMsg}</h5>
-          {/* <Link to="/discuss" style={{ textDecoration: "none" }}> */}
+
+          {acceptDiscussionLoading.state ? (
+            <React.Fragment>
+              <Button
+                variant="contained"
+                color="primary"
+                style={acceptButton}
+                onClick={() => {
+                  changeToDiscussionPage();
+                }}
+                disabled={true}
+              >
+                <CircularProgress size={16} style={yellowColor} />{" "}
+                <span>&nbsp;&nbsp;</span>
+                Accept
+              </Button>
+            </React.Fragment>
+          ) : (
+            <Button
+              variant="contained"
+              color="primary"
+              style={acceptButton}
+              onClick={() => {
+                changeToDiscussionPage();
+              }}
+            >
+              Accept
+            </Button>
+          )}
+
           <Button
             variant="contained"
             color="primary"
-            style={acceptButton}
-            onClick={changeToDiscussionPage}
+            style={deleteButton}
+            disabled={acceptDiscussionLoading.state}
+            onClick={deleteRequest}
           >
-            Accept
-          </Button>
-          {/* </Link> */}
-
-          <Button variant="contained" color="primary" style={deleteButton}>
             Delete Request
           </Button>
           <p>(Note: User needs to be online to connect)</p>
@@ -225,11 +247,7 @@ function IndividualRequest(props) {
       );
     }
   } else {
-    return (
-      <div className={styles.requestImageDiv}>
-        <img src={RequestImage} style={requestImage} />
-      </div>
-    );
+    return <h4>Click on a request...</h4>;
   }
 }
 

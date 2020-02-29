@@ -345,7 +345,7 @@ class Registration extends React.Component {
           </DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
-              Please check your mail for confirmation link.
+              Please Login
             </DialogContentText>
           </DialogContent>
           <DialogActions>

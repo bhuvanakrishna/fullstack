@@ -62,7 +62,10 @@ function IndividualUser(props) {
 
   const sendReqFunction = e => {
     e.preventDefault();
-    console.log("inside send req function");
+
+    //calling handleRequestsList in the searchusers component to update state of who sent requests to whom. So that is the request is already sent to user. We disable send request button
+    props.handleRequestsList(authContext.user.name, props.individualUser.name);
+
     if (props.socket) {
       props.socket.emit("requestTo", {
         room: props.individualUser.name,
@@ -73,27 +76,27 @@ function IndividualUser(props) {
   };
 
   const updateReqMessage = e => {
-    // e.preventDefault();
     changeReqMsgState(e.target.value);
   };
 
-  useEffect(() => {
-    // console.log("req msg:");
-    // console.log(reqMsgState);
-    // console.log("socket:");
-    // if (props.socket) {
-    //   props.socket.emit("requestTo", {
-    //     room: props.individualUser.name,
-    //     msg: reqMsgState
-    //   });
-    // }
-  }, [reqMsgState]);
-
   const classes = useStyles();
-  // console.log("individual user:");
-  // console.log(props.individualUser);
-  // console.log("list of users");
-  // console.log(props.list);
+
+  const [requestSentAlready, changeRequestSentAlready] = useState(false);
+
+  useEffect(() => {
+    props.requestsSentTo.forEach(obj => {
+      if (
+        obj.from === authContext.user.name &&
+        obj.to === props.individualUser.name
+      ) {
+        changeRequestSentAlready(true);
+      } else {
+        changeRequestSentAlready(false);
+      }
+    });
+    // eslint-disable-next-line
+  }, [props.individualUser, props.requestsSentTo]);
+
   if (
     !props.individualUser
     // || !props.list.includes(props.individualUser)
@@ -116,34 +119,41 @@ function IndividualUser(props) {
             {props.individualUser.bio}
           </p>
         </div>
-        <p style={sendreq}>Send Request:</p>
-        <form>
-          <TextField
-            id="standard-multiline-static"
-            label="Request Message"
-            variant="filled"
-            fullWidth
-            required
-            helperText="(Max 100 characters)"
-            inputProps={{ maxLength: 100 }}
-            style={reqmsgpadding}
-            InputProps={{
-              className: classes.underlineyellow
-            }}
-            InputLabelProps={{
-              className: classes.blacklabel
-            }}
-            onChange={updateReqMessage}
-          />
-          <Button
-            variant="contained"
-            style={sendreqbutton}
-            type="submit"
-            onClick={sendReqFunction}
-          >
-            Send
-          </Button>
-        </form>
+
+        {requestSentAlready ? (
+          <h4>Request sent.</h4>
+        ) : (
+          <React.Fragment>
+            <p style={sendreq}>Send Request:</p>
+            <form>
+              <TextField
+                id="standard-multiline-static"
+                label="Request Message"
+                variant="filled"
+                fullWidth
+                required
+                helperText="(Max 100 characters)"
+                inputProps={{ maxLength: 100 }}
+                style={reqmsgpadding}
+                InputProps={{
+                  className: classes.underlineyellow
+                }}
+                InputLabelProps={{
+                  className: classes.blacklabel
+                }}
+                onChange={updateReqMessage}
+              />
+              <Button
+                variant="contained"
+                style={sendreqbutton}
+                type="submit"
+                onClick={sendReqFunction}
+              >
+                Send
+              </Button>
+            </form>
+          </React.Fragment>
+        )}
       </div>
     );
   } else return null;

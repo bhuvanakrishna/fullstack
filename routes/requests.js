@@ -5,6 +5,7 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const config = require("config");
 const jwt = require("jsonwebtoken");
+const uuid = require("uuid");
 
 //any time if we want to protect a route, we need middleware
 const auth = require("../middleware/auth");
@@ -36,45 +37,76 @@ router.get("/", auth, async (req, res) => {
 //@route    PUT /requests
 //@desc     enter requests in database
 //@access   private
-router.put(
-  "/",
-  auth,
+router.put("/", auth, async (req, res) => {
+  // console.log(req.body);
 
-  async (req, res) => {
-    // const errors = validationResult(req);
+  let { from, to, reqMsg } = req.body;
 
-    // if (!errors.isEmpty()) {
-    //   return res.status(400).json({ errors: errors.array() });
-    // }
+  from = from.toString();
+  to = to.toString();
+  reqMsg = reqMsg.toString();
 
-    let { from, to, reqMsg } = req.body;
+  const id = uuid.v4();
 
-    from = from.toString();
-    to = to.toString();
-    reqMsg = reqMsg.toString();
-
-    try {
-      let user = await User.findOneAndUpdate(
-        { name: to },
-        {
-          $push: {
-            receivedRequests: {
-              from: from,
-              reqMsg: reqMsg
-            }
+  try {
+    let user = await User.findOneAndUpdate(
+      { name: to },
+      {
+        $push: {
+          receivedRequests: {
+            id: id,
+            from: from,
+            reqMsg: reqMsg
           }
         }
-      );
-
-      if (!user) {
-        return res.status(400).send("Cannot update");
       }
-    } catch (error) {
-      console.log(error);
-      res.status(500).send("Server Error");
+    );
+
+    // console.log("INSIDE PUT REQUESTS");
+
+    if (!user) {
+      return res.status(400).send("Cannot update");
     }
-    // res.send("login route");
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Server Error");
   }
-);
+  // res.send("login route");
+});
+
+//@route    DELETE /requests
+//@desc     delete a particular request from the db
+//@access   private
+router.delete("/", auth, async (req, res) => {
+  // console.log("inside requests delete route");
+  // console.log(req.body);
+
+  let { name, id } = req.body;
+
+  name = name.toString();
+
+  try {
+    let user = await User.findOneAndUpdate(
+      { name: name },
+      {
+        $pull: {
+          receivedRequests: {
+            id: id
+          }
+        }
+      }
+    );
+
+    // console.log("INSIDE PUT REQUESTS");
+
+    if (!user) {
+      return res.status(400).send("Cannot update");
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Server Error");
+  }
+  // res.send("login route");
+});
 
 module.exports = router;

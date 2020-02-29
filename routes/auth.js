@@ -41,13 +41,19 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
+    // console.log("inside login route");
+
     let { email, password } = req.body;
 
     email = email.toString();
     password = password.toString();
 
     try {
+      // console.log("inside try block");
+
       let user = await User.findOne({ email });
+
+      // console.log("found one");
 
       if (!user) {
         return res.status(400).send("Invalid Credentials");

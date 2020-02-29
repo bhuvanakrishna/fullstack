@@ -21,7 +21,7 @@ router.post(
   //   })
   // ],
   async (req, res) => {
-    console.log("inside register route");
+    // console.log("inside register route");
 
     // const errors = validationResult(req);
 
@@ -33,19 +33,19 @@ router.post(
 
     let { registerEmail, registerName, registerPassword1 } = req.body;
 
-    console.log(
-      `registeremail: ${registerEmail}, registername: ${registerName}, registerpassword: ${registerPassword1}`
-    );
+    // console.log(
+    //   `registeremail: ${registerEmail}, registername: ${registerName}, registerpassword: ${registerPassword1}`
+    // );
 
     registerEmail = registerEmail.toString();
     registerName = registerName.toString();
     registerPassword1 = registerPassword1.toString();
-    console.log("registeremail type: " + typeof registerEmail);
+    // console.log("registeremail type: " + typeof registerEmail);
 
     try {
       let emailexists = await User.findOne({ email: registerEmail });
 
-      console.log("checked if mail existed..: " + emailexists);
+      // console.log("checked if mail existed..: " + emailexists);
 
       if (emailexists) {
         return res.status(400).json({ msg: "Mail Already Registered" });
@@ -57,7 +57,7 @@ router.post(
         return res.status(400).json({ msg: "Username Already Taken" });
       }
 
-      console.log("checked if name existed..");
+      // console.log("checked if name existed..");
 
       user = new User({
         name: registerName,
@@ -65,7 +65,7 @@ router.post(
         password: registerPassword1
       });
 
-      console.log("user object created..");
+      // console.log("user object created..");
 
       const salt = await bcrypt.genSalt(10);
 

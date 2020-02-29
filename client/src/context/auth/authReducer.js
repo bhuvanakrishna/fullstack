@@ -8,8 +8,7 @@ import {
   USER_LOADED,
   CLEAR_ERRORS,
   REGISTRATION_DIALOG_OPEN,
-  REGISTRATION_DIALOG_CLOSE,
-  TOGGLE_LOADING
+  REGISTRATION_DIALOG_CLOSE
 } from "../types";
 
 export default (state, action) => {
@@ -44,6 +43,7 @@ export default (state, action) => {
     case REGISTER_FAIL:
     case AUTH_ERROR:
     case LOGIN_FAIL:
+    case LOGOUT:
       localStorage.removeItem("token");
       return {
         ...state,

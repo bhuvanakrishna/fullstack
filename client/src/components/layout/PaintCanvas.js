@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
-import { findDOMNode } from "react-dom";
+
 import styles from "../pages/Searchusers.module.css";
-import { Drawer } from "@material-ui/core";
+
 import Button from "@material-ui/core/Button";
 import BlackPenImage from "../assets/blackpen.svg";
 import BluePenImage from "../assets/bluepen.svg";
@@ -11,10 +11,7 @@ import ClearImage from "../assets/clear.svg";
 import EraserImage from "../assets/eraser.svg";
 
 function PaintCanvas(props) {
-  //   let canvas;
   let ctx;
-  let top;
-  let left;
 
   // colors:
   // black: #000000
@@ -25,14 +22,7 @@ function PaintCanvas(props) {
 
   const canvasRef = useRef("");
 
-  const [currPos, changeCurPos] = useState({
-    x: null,
-    y: null
-  });
-
   const [isDrawing, changeIsDrawing] = useState(false);
-
-  // const [strokes, changeStrokes] = useState([]);
 
   const [strokeVariablesState, changeStrokeVariablesState] = useState({
     color: "#000000",
@@ -43,34 +33,17 @@ function PaintCanvas(props) {
     styles.canvasClass
   );
 
-  let strokes = [];
-
-  let xCoord = [];
-  let yCoord = [];
   let isDragging = false;
-  let dragArray = [];
-  // var color = "#000000";
-  // var strokeWidth = 3;
-
-  // console.log("is Drawing: " + isDrawing);
 
   const mouseDownFunction = e => {
-    // console.log("ctx in mouse down function");
-    // console.log(ctx);
-    // console.log("inside mouse down function");
     changeIsDrawing(true);
 
     if (ctx) {
-      // drawFunction(e);
       wrapperForDraw(e);
     }
   };
 
   const mouseUpFunction = e => {
-    // console.log("inside mouse up function");
-    // console.log("ctx in mouse up function");
-    // console.log(ctx);
-
     if (ctx) {
       ctx.beginPath();
     }
@@ -80,62 +53,80 @@ function PaintCanvas(props) {
   };
 
   const mouseMoveFunction = e => {
-    // console.log("inside mouse move function");
-
-    // console.log("ctx in mouse move function");
-    // console.log(ctx);
-
-    // console.log(ctx);
     if (ctx) {
       isDragging = true;
-      // drawFunction(e);
+
       wrapperForDraw(e, isDragging);
     }
-
-    // getCursorPosition(e);
   };
+
+  let xCoord = [];
+  let yCoord = [];
+  let dragArray = [];
 
   const wrapperForDraw = (e, isDragging = false) => {
     if (!isDrawing) return;
 
-    xCoord.push(e.clientX);
-    yCoord.push(e.clientY);
+    // xCoord.push(e.clientX);
+    // yCoord.push(e.clientY);
+
+    xCoord.push(e.clientX - canvasRef.current.getBoundingClientRect().x);
+    yCoord.push(e.clientY - canvasRef.current.getBoundingClientRect().y);
+
     dragArray.push(isDragging);
 
-    // strokes.push({
-    //   x: e.clientX,
-    //   y: e.clientY
-    // });
-    // console.log(JSON.stringify(strokes));
     drawFunction(xCoord, yCoord, dragArray);
+
+    props.socket.emit("drawing", {
+      to: props.connectedTo,
+      xCoord,
+      yCoord,
+      dragArray,
+      strokeColor: strokeVariablesState.color,
+      strokeThick: strokeVariablesState.width
+    });
+
+    xCoord.splice(0, xCoord.length * 0.9);
+    yCoord.splice(0, yCoord.length * 0.9);
+    dragArray.splice(0, dragArray.length * 0.9);
   };
 
   const clearCanvas = () => {
     if (ctx) {
       // let { top, left } = canvasRef.current.getBoundingClientRect();
       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+      // changeCanvasClearState(true);
+
+      props.socket.emit("clearBoard", {
+        to: props.connectedTo
+      });
+
+      xCoord.splice(0, xCoord.length);
+      yCoord.splice(0, yCoord.length);
+      dragArray.splice(0, dragArray.length);
+    }
+  };
+
+  const clearCanvasFromSocket = () => {
+    if (ctx) {
+      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+      xCoord.splice(0, xCoord.length);
+      yCoord.splice(0, yCoord.length);
+      dragArray.splice(0, dragArray.length);
     }
   };
 
   const changeColor = newColor => {
-    console.log("inside change color function");
+    // console.log("inside change color function");
     if (newColor == "blue") {
       changeStrokeVariablesState({
         color: "#0277BD",
         width: 3
       });
       changeCanvasClassState(styles.canvasClassBlue);
-      // color = "#0000FF";
-      // strokeWidth = 3;
-      // ctx.strokeStyle = "#0000FF";
-      // ctx.lineWidth = 3;
-      // color = "#0000FF";
     }
     if (newColor == "white") {
-      // ctx.strokeStyle = "#FFFFFF";
-      // ctx.lineWidth = 25;
-      // color = "#FFFFFF";
-      // strokeWidth = 25;
       changeStrokeVariablesState({
         color: "#FFFFFF",
         width: 25
@@ -143,10 +134,6 @@ function PaintCanvas(props) {
       changeCanvasClassState(styles.canvasClassEraser);
     }
     if (newColor == "black") {
-      // ctx.strokeStyle = "#000000";
-      // ctx.lineWidth = 3;
-      // color = "#000000";
-      // strokeWidth = 3;
       changeStrokeVariablesState({
         color: "#000000",
         width: 3
@@ -167,120 +154,173 @@ function PaintCanvas(props) {
       });
       changeCanvasClassState(styles.canvasClassRed);
     }
-    // color = newColor;
   };
 
   const drawFunction = (xCoord, yCoord, dragArray) => {
-    // console.log("inside draw function");
-    // console.log(color);
-    let { top, left } = canvasRef.current.getBoundingClientRect();
-
     if (!isDrawing) return;
-
-    // console.log("inside draw function");
-    // console.log(ctx.strokeStyle);
-    // console.log("color in draw function");
 
     ctx.lineCap = "round";
     ctx.strokeStyle = strokeVariablesState.color;
     ctx.lineWidth = strokeVariablesState.width;
-    // if (ctx.strokeStyle == "#000000") {
-    //   ctx.lineWidth = 3;
-    // }
-
-    // ctx.lineTo(e.clientX - left, e.clientY - top + 32);
-    // ctx.stroke();
-    // ctx.beginPath();
-    // ctx.moveTo(e.clientX - left, e.clientY - top + 32);
-
-    // for (let i = 0; i < strokes.length; i++) {
-    //   ctx.beginPath();
-    //   ctx.moveTo(strokes[i].x - left, strokes[i].y - top + 32);
-    //   ctx.lineTo(strokes[i].x - left, strokes[i].y - top + 32);
-    //   ctx.closePath();
-    //   ctx.stroke();
-    // }
 
     for (let i = 0; i < xCoord.length; i++) {
       ctx.beginPath();
       if (dragArray[i] && i) {
-        ctx.moveTo(xCoord[i - 1] - left, yCoord[i - 1] - top + 32);
+        // ctx.moveTo(xCoord[i - 1] - left, yCoord[i - 1] - top + 32);
+        // ctx.moveTo(
+        //   xCoord[i - 1] + canvasRef.current.getBoundingClientRect().x,
+        //   yCoord[i - 1] + canvasRef.current.getBoundingClientRect().y + 32
+        // );
+
+        ctx.moveTo(xCoord[i - 1], yCoord[i - 1] + 32);
       } else {
-        ctx.moveTo(xCoord[i] - 1 - left, yCoord[i] - top + 32);
+        // ctx.moveTo(xCoord[i] - 1 - left, yCoord[i] - top + 32);
+        // ctx.moveTo(
+        //   xCoord[i] - 1 + canvasRef.current.getBoundingClientRect().x,
+        //   yCoord[i] + canvasRef.current.getBoundingClientRect().y + 32
+        // );
+
+        ctx.moveTo(xCoord[i] - 1, yCoord[i] + 32);
       }
-      ctx.lineTo(xCoord[i] - left, yCoord[i] - top + 32);
+      // ctx.lineTo(xCoord[i] - left, yCoord[i] - top + 32);
+
+      // ctx.lineTo(
+      //   xCoord[i] - 1 + canvasRef.current.getBoundingClientRect().x,
+      //   yCoord[i] + canvasRef.current.getBoundingClientRect().y + 32
+      // );
+
+      ctx.lineTo(xCoord[i] - 1, yCoord[i] + 32);
+
       ctx.closePath();
       ctx.stroke();
     }
   };
 
-  //   function getCursorPosition(e) {
-  //     const { top, left } = canvasRef.current.getBoundingClientRect();
-  //     changeCurPos({
-  //       ...currPos,
-  //       x: e.clientX - left,
-  //       y: e.clientY - top
-  //     });
-  //     // console.log(currPos);
-  //     return [e.clientX - left, e.clientY - top];
-  //   }
+  // console.log("xCoord");
+  // console.log(xCoord);
 
-  //draw function
+  const drawFunctionFromSocket = (
+    xCoord,
+    yCoord,
+    dragArray,
+    strokeColor = "#000000",
+    strokeThick = "3"
+  ) => {
+    if (ctx && canvasRef.current) {
+      ctx.lineCap = "round";
+      ctx.strokeStyle = strokeColor;
+      ctx.lineWidth = strokeThick;
 
-  //   console.log("from paint canvas component");
+      for (let i = 0; i < xCoord.length; i++) {
+        ctx.beginPath();
+        if (dragArray[i] && i) {
+          // ctx.moveTo(xCoord[i - 1] - left, yCoord[i - 1] - top + 32);
+
+          // ctx.moveTo(
+          //   xCoord[i - 1] + canvasRef.current.getBoundingClientRect().x,
+          //   yCoord[i - 1] + canvasRef.current.getBoundingClientRect().y + 32
+          // );
+
+          ctx.moveTo(xCoord[i - 1], yCoord[i - 1] + 32);
+        } else {
+          // ctx.moveTo(xCoord[i] - 1 - left, yCoord[i] - top + 32);
+          // ctx.moveTo(
+          //   xCoord[i] - 1 + canvasRef.current.getBoundingClientRect().x,
+          //   yCoord[i] + canvasRef.current.getBoundingClientRect().y + 32
+          // );
+
+          ctx.moveTo(xCoord[i] - 1, yCoord[i] + 32);
+        }
+        // ctx.lineTo(xCoord[i] - left, yCoord[i] - top + 32);
+        // ctx.lineTo(
+        //   xCoord[i] - 1 + canvasRef.current.getBoundingClientRect().x,
+        //   yCoord[i] + canvasRef.current.getBoundingClientRect().y + 32
+        // );
+
+        ctx.lineTo(xCoord[i] - 1, yCoord[i] + 32);
+
+        ctx.closePath();
+        ctx.stroke();
+      }
+    }
+  };
+
+  props.socket.on("clearBoardFromServer", () => {
+    clearCanvasFromSocket();
+  });
+
+  props.socket.on("receiveDrawing", data => {
+    // console.log("inside recieve socket drawing data");
+    if (ctx) {
+      drawFunctionFromSocket(
+        data.xCoord,
+        data.yCoord,
+        data.dragArray,
+        data.strokeColor,
+        data.strokeThick
+      );
+    }
+  });
 
   useEffect(() => {
     let canvas = canvasRef.current;
-    // console.log(canvas.getBoundingClientRect());
+
     ctx = canvas.getContext("2d");
 
-    // ctx.fillRect(50, 50, 100, 100);
+    xCoord.splice(0, xCoord.length);
+    yCoord.splice(0, yCoord.length);
+    dragArray.splice(0, dragArray.length);
   });
 
   return (
-    <div>
-      <Button onClick={clearCanvas}>
-        <img src={ClearImage} />
-      </Button>
-      <Button
-        onClick={() => {
-          changeColor("black");
-        }}
-      >
-        <img src={BlackPenImage} />
-      </Button>
-      <Button
-        onClick={() => {
-          changeColor("blue");
-        }}
-      >
-        <img src={BluePenImage} />
-      </Button>
-      <Button
-        onClick={() => {
-          changeColor("red");
-        }}
-      >
-        <img src={RedPenImage} />
-      </Button>
-      <Button
-        onClick={() => {
-          changeColor("green");
-        }}
-      >
-        <img src={GreenPenImage} />
-      </Button>
-      <Button
-        onClick={() => {
-          changeColor("white");
-        }}
-      >
-        <img src={EraserImage} />
-      </Button>
+    <div className={styles.insidePaintComponent}>
+      <div className={styles.paintButtons}>
+        <Button onClick={clearCanvas}>
+          <img src={ClearImage} alt="clear" />
+        </Button>
+        <Button
+          onClick={() => {
+            changeColor("black");
+          }}
+        >
+          <img src={BlackPenImage} alt="blackpen" />
+        </Button>
+        <Button
+          onClick={() => {
+            changeColor("blue");
+          }}
+        >
+          <img src={BluePenImage} alt="bluepen" />
+        </Button>
+        <Button
+          onClick={() => {
+            changeColor("red");
+          }}
+        >
+          <img src={RedPenImage} alt="redpen" />
+        </Button>
+        <Button
+          onClick={() => {
+            changeColor("green");
+          }}
+        >
+          <img src={GreenPenImage} alt="greenpen" />
+        </Button>
+        <Button
+          onClick={() => {
+            changeColor("white");
+          }}
+        >
+          <img src={EraserImage} alt="eraser" />
+        </Button>
+      </div>
+
       <canvas
         ref={canvasRef}
+        // width="100%"
         width="500px"
         height="500px"
+        // height="100%"
         onMouseDown={mouseDownFunction}
         onMouseUp={mouseUpFunction}
         onMouseMove={mouseMoveFunction}

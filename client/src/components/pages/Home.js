@@ -1,16 +1,10 @@
 import React, { useState, useContext, useEffect } from "react";
-// import { useTheme } from "@material-ui/core/styles";
-// import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Image from "../assets/connect.svg";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
-import {
-  makeStyles
-  // MuiThemeProvider,
-  // createMuiTheme
-} from "@material-ui/core/styles";
-// import green from "@material-ui/core/colors/green";
-// import FormHelperText from "@material-ui/core/FormHelperText";
+import CircularProgress from "@material-ui/core/CircularProgress";
+
+import { makeStyles } from "@material-ui/core/styles";
 
 import Registration from "../layout/Registration";
 
@@ -52,10 +46,10 @@ const useStyles = makeStyles(theme => ({
   },
   blacklabel: {
     color: ["black", "!important"]
+  },
+  yellowColor: {
+    color: "black"
   }
-  //   floatingLabelFocusStyle: {
-  //     color: "white"
-  //   }
 }));
 
 const Home = props => {
@@ -72,12 +66,12 @@ const Home = props => {
   useEffect(() => {
     if (isAuthenticated === true) {
       props.history.push("/searchusers");
-      // props.history.push("/searchuserscc");
     }
 
     if (error == "Invalid Credentials") {
       setLogin({ ...loginform, loginErrorMsg: "Invalid Credentials" });
       clearErrors();
+      changeLoginLoading(false);
     }
     //eslint-disable-next-line
   }, [error, isAuthenticated, props.history]);
@@ -90,38 +84,51 @@ const Home = props => {
     setLogin({ ...loginform, [e.target.name]: [e.target.value] });
   };
 
+  const [loginLoading, changeLoginLoading] = useState(false);
+
+  useEffect(() => {
+    if (loginLoading) {
+      if (loginform.loginemail == "" || loginform.loginpassword == "") {
+        setLogin({
+          ...loginform,
+          loginErrorMsg: "Please enter your credentials."
+        });
+        changeLoginLoading(false);
+      } else {
+        const localLogin = async () => {
+          login({
+            email: loginform.loginemail,
+            password: loginform.loginpassword
+          }).then(response => {
+            if (!response) {
+              setLogin({
+                ...loginform,
+                loginErrorMsg: "User not found."
+              });
+              changeLoginLoading(false);
+            } else {
+              // console.log(response);
+              changeLoginLoading(false);
+            }
+          });
+        };
+
+        localLogin();
+      }
+    }
+  }, [loginLoading]);
+
   const loginSubmit = e => {
     e.preventDefault();
 
-    if (loginform.loginemail == "" || loginform.loginpassword == "") {
-      setLogin({
-        ...loginform,
-        loginErrorMsg: "Please enter your credentials."
-      });
-    } else {
-      login({
-        email: loginform.loginemail,
-        password: loginform.loginpassword
-      });
-    }
-    console.log("login submit");
+    changeLoginLoading(true);
   };
 
   return (
     <div className="container">
-      {/* <div className="banner">
-        <p id="main-heading">E-VID BOARD</p>
-        <p id="sub-heading">Connect to your friends and discuss...</p>
-        {xs && <p>you are on xs device</p>}
-        {sm && <p>you are on sm device</p>}
-        {md && <p>you are on md device</p>}
-        {lg && <p>you are on lg device</p>}
-        {xl && <p>you are on xl device</p>} 
-      </div>*/}
-
       <div id="header">
         <p id="mainheading">E-VID BOARD</p>
-        <p id="subheading">Connect with your friends and discuss...</p>
+        <p id="subheading">Connect and discuss...</p>
       </div>
       <div id="mainleft">
         <img id="mainpageimage" src={Image} alt="" />
@@ -131,7 +138,6 @@ const Home = props => {
         <div id="loginformdiv">
           <form onSubmit={loginSubmit}>
             <TextField
-              // id="filled-basic"
               label="Email"
               variant="filled"
               className={classes.margin20}
@@ -148,7 +154,6 @@ const Home = props => {
               required
             />
             <TextField
-              // color="white"
               id="filled-basic"
               label="Password"
               variant="filled"
@@ -158,7 +163,6 @@ const Home = props => {
               }}
               InputLabelProps={{
                 className: classes.whitelabel
-                // focussed: classes.whitelabel
               }}
               type="password"
               value={loginpassword}
@@ -171,13 +175,21 @@ const Home = props => {
               className={classes.margin20}
               type="submit"
             >
+              {loginLoading ? (
+                <React.Fragment>
+                  <CircularProgress
+                    size={16}
+                    classes={{ colorPrimary: classes.yellowColor }}
+                  />
+                  <span>&nbsp;&nbsp;</span>
+                </React.Fragment>
+              ) : null}
               Login
             </Button>
           </form>
         </div>
 
         <div id="loginError">
-          {/* <p>Invalid credentials. Please try again.</p> */}
           <p>{loginform.loginErrorMsg}</p>
         </div>
 
@@ -197,10 +209,6 @@ const Home = props => {
       </div>
 
       <Footer></Footer>
-      {/* <div id="footer">
-        <p>Created by Bhuvana Krishna</p>
-        <p>Email: bhuvanakrishna95@gmail.com</p>
-      </div> */}
     </div>
   );
 };

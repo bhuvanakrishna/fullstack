@@ -92,7 +92,7 @@ const AuthState = props => {
         "Content-Type": "Application/JSON"
       }
     };
-
+    // console.log("inside login");
     try {
       const res = await axios.post("/auth", formData, config);
       dispatch({
@@ -102,6 +102,7 @@ const AuthState = props => {
       });
 
       loadUser();
+      return res;
     } catch (error) {
       //called when the api responds with error
       dispatch({
@@ -113,6 +114,7 @@ const AuthState = props => {
   };
 
   //logout
+  const logout = () => dispatch({ type: LOGOUT });
 
   //clear errors - clear any errors in state
   const clearErrors = () => {
@@ -150,7 +152,8 @@ const AuthState = props => {
         closeDialog,
         toggleLoading,
         loadUser,
-        login
+        login,
+        logout
       }}
     >
       {props.children}

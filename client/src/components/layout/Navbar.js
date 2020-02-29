@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -11,6 +11,9 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
 import NavbarContext from "../../context/navbar/navbarContext";
 import AuthContext from "../../context/auth/authContext";
+import styles from "../pages/Searchusers.module.css";
+import Hidden from "@material-ui/core/Hidden";
+// import Home from "../pages/Home";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -21,20 +24,11 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+const Wire = ({ children, ...props }) => children(props);
+
 export default function Navbar(props) {
   const navbarContext = useContext(NavbarContext);
   const authContext = useContext(AuthContext);
-
-  // useEffect(() => {
-  //   if (props.socket) {
-  //     props.socket.on("requestFrom", function(data) {
-  //       console.log("received msg from :");
-  //       console.log(data.from);
-  //       console.log("message is:");
-  //       console.log(data.msg);
-  //     });
-  //   }
-  // }, [props.socket]);
 
   const classes = useStyles();
 
@@ -50,8 +44,12 @@ export default function Navbar(props) {
     setAnchorEl(null);
   };
 
-  const toggleNotifications = () => {
-    // console.log(props.onClick);
+  const handleLogout = () => {
+    authContext.logout();
+    window.location.href = "/";
+  };
+
+  const toggleNotifications = async () => {
     if (props.onClick) {
       props.onClick();
     }
@@ -89,9 +87,41 @@ export default function Navbar(props) {
           My account
         </MenuItem>
       ) : null}
-      <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
+      <Wire>
+        {props => (
+          <Hidden xsUp>
+            <MenuItem onClick={handleMenuClose}></MenuItem>
+          </Hidden>
+        )}
+      </Wire>
+      <MenuItem onClick={handleLogout}>Logout</MenuItem>
     </Menu>
   );
+
+  if (navbarContext.discussionPage) {
+    return (
+      // <div className={classes.root}>
+      <div style={{ width: "100%" }}>
+        <AppBar
+          position="static"
+          style={{
+            background: "#fcba04"
+            // minWidth: "1000px"
+            // flexGrow: "9",
+            // display: "table-row"
+          }}
+          className={styles.navbar}
+        >
+          <Toolbar>
+            <Typography variant="h5" className={classes.title}>
+              E-VID BOARD
+            </Typography>
+          </Toolbar>
+        </AppBar>
+        {/* {renderMenu} */}
+      </div>
+    );
+  }
 
   return (
     <div className={classes.root}>
@@ -116,17 +146,18 @@ export default function Navbar(props) {
               <Typography variant="body1" className={classes.title}>
                 Requests
               </Typography>
-              <Badge badgeContent={props.requests} color="secondary">
+              <Badge
+                badgeContent={props.requests}
+                // badgeContent={requestsContext.unreadRequests}
+                // badgeContent={notifCount}
+                color="secondary"
+              >
                 <NotificationsIcon />
               </Badge>
             </IconButton>
           ) : null}
           {navbarContext.requestsPage ? (
-            <IconButton
-              // aria-label="show 17 new notifications"
-              color="inherit"
-              onClick={toggleNotifications}
-            >
+            <IconButton color="inherit" onClick={toggleNotifications}>
               <Typography variant="body1" className={classes.title}>
                 Search Users
               </Typography>
